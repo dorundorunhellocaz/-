@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>PPT 내용 검증</title>
+</head>
+<body>
+<h1>PPT 내부 구조 검증</h1>
+<pre id="out">running…</pre>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script src="js/summary-deck.js"></script>
+<script src="js/ppt-export.js"></script>
+<script>
+(async function () {
+  var out = document.getElementById('out');
+  try {
+    console.log('ZIPLIB=' + (typeof window.JSZip));
+    var pptx = window.PptExport.build();
+    var buf = await pptx.write({ outputType: 'arraybuffer' });
+    var zip = await window.JSZip.loadAsync(buf);
+
+    var slideFiles = Object.keys(zip.files)
+      .filter(function (n) { return /^ppt\/slides\/slide\d+\.xml$/.test(n); })
+      .sort(function (a, b) {
+        return parseInt(a.match(/(\d+)/)[1], 10) - parseInt(b.match(/(\d+)/)[1], 10);
+      });
+
+    console.log('SLIDE_COUNT=' + slideFiles.length);
+
+    // 각 슬라이드에서 <a:t> 텍스트만 추출해 앞부분 확인
+    for (var i = 0; i < slideFiles.length; i++) {
+      var xml = await zip.file(slideFiles[i]).async('string');
+      var texts = (xml.match(/<a:t>([^<]*)<\/a:t>/g) || [])
+        .map(function (t) { return t.replace(/<\/?a:t>/g, ''); });
+      var joined = texts.join(' | ').slice(0, 220);
+      console.log('SLIDE' + (i + 1) + '_TEXT: ' + joined);
+    }
+
+    out.textContent = 'OK slides=' + slideFiles.length;
+  } catch (e) {
+    out.textContent = 'FAIL ' + (e && e.message ? e.message : e);
+    console.log('FAIL ' + (e && e.stack ? e.stack : e));
+  }
+})();
+</script>
+</body>
+</html>

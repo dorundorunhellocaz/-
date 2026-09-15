@@ -1,0 +1,108 @@
+[
+  {
+    "name": "alerts",
+    "fields": [
+      {
+        "name": "id",
+        "type": "text",
+        "description": "알림 고유 ID"
+      },
+      {
+        "name": "elder_name",
+        "type": "text",
+        "description": "대상 어르신 이름(가명)"
+      },
+      {
+        "name": "severity",
+        "type": "text",
+        "description": "심각도",
+        "options": [
+          "info",
+          "warning",
+          "critical"
+        ]
+      },
+      {
+        "name": "category",
+        "type": "text",
+        "description": "알림 분류 (정서/인지/활동/연결/응급)"
+      },
+      {
+        "name": "message",
+        "type": "text",
+        "description": "알림 내용"
+      },
+      {
+        "name": "detected_at",
+        "type": "datetime",
+        "description": "감지 시각"
+      },
+      {
+        "name": "status",
+        "type": "text",
+        "description": "처리 상태",
+        "options": [
+          "open",
+          "acknowledged",
+          "resolved",
+          "false_alarm"
+        ]
+      },
+      {
+        "name": "assignee",
+        "type": "text",
+        "description": "담당자"
+      },
+      {
+        "name": "note",
+        "type": "rich_text",
+        "description": "처리 메모"
+      }
+    ]
+  },
+  {
+    "name": "care_notes",
+    "fields": [
+      {
+        "name": "id",
+        "type": "text",
+        "description": "노트 고유 ID"
+      },
+      {
+        "name": "elder_name",
+        "type": "text",
+        "description": "대상 어르신 이름(가명)"
+      },
+      {
+        "name": "author",
+        "type": "text",
+        "description": "작성자"
+      },
+      {
+        "name": "role",
+        "type": "text",
+        "description": "작성자 역할 (보호자/전문가/기관)"
+      },
+      {
+        "name": "category",
+        "type": "text",
+        "description": "노트 분류 (정서/인지/활동/일반)"
+      },
+      {
+        "name": "content",
+        "type": "rich_text",
+        "description": "노트 내용"
+      },
+      {
+        "name": "created_at",
+        "type": "datetime",
+        "description": "작성 시각"
+      },
+      {
+        "name": "pinned",
+        "type": "bool",
+        "description": "상단 고정 여부"
+      }
+    ]
+  }
+]

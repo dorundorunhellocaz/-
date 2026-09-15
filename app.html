@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 반려로봇 실버케어 플랫폼 | 보호자·전문가 모니터링 대시보드</title>
+<meta name="description" content="AI 반려로봇 실버케어 플랫폼의 보호자 및 건강관리 전문가용 모니터링 웹앱 프로토타입. 정서 상태, 신체활동 달성도, 인지 훈련 리포트, 실시간 모니터링과 긴급 알림을 제공합니다.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/app.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+</head>
+<body>
+<a class="skip-link" href="#app-content">본문으로 건너뛰기</a>
+
+<div class="app-shell">
+  <!-- ===================== 사이드바 ===================== -->
+  <aside class="app-sidebar" aria-label="앱 내비게이션">
+    <a class="brand" href="index.html">
+      <span class="brand__mark" aria-hidden="true"><i class="fa-solid fa-robot"></i></span>
+      <span class="brand__text">
+        <span class="brand__name">실버케어 모니터링</span>
+        <span class="brand__sub">보호자 · 전문가 대시보드</span>
+      </span>
+    </a>
+
+    <nav class="sidebar-section" aria-label="주요 화면">
+      <p class="sidebar-section__label">모니터링</p>
+      <ul class="sidebar-nav" role="tablist" aria-orientation="vertical">
+        <li role="presentation">
+          <button type="button" role="tab" id="tabbtn-dashboard" aria-controls="panel-dashboard" aria-selected="true" data-tab="dashboard">
+            <i class="fa-solid fa-gauge-high" aria-hidden="true"></i> 메인 대시보드
+          </button>
+        </li>
+        <li role="presentation">
+          <button type="button" role="tab" id="tabbtn-reports" aria-controls="panel-reports" aria-selected="false" data-tab="reports">
+            <i class="fa-solid fa-brain" aria-hidden="true"></i> 정신건강 &amp; 인지
+          </button>
+        </li>
+        <li role="presentation">
+          <button type="button" role="tab" id="tabbtn-activity" aria-controls="panel-activity" aria-selected="false" data-tab="activity">
+            <i class="fa-solid fa-person-walking" aria-hidden="true"></i> 신체활동 코칭
+          </button>
+        </li>
+        <li role="presentation">
+          <button type="button" role="tab" id="tabbtn-monitoring" aria-controls="panel-monitoring" aria-selected="false" data-tab="monitoring">
+            <i class="fa-solid fa-tower-broadcast" aria-hidden="true"></i> 실시간 모니터링
+            <span class="count-pill" id="alert-count-pill" data-empty="true">0</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <nav class="sidebar-section" aria-label="외부 링크">
+      <p class="sidebar-section__label">프로젝트</p>
+      <ul class="sidebar-nav">
+        <li><a class="side-link" href="presentation.html" style="display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;color:#cfe3e5;font-size:.875rem;font-weight:600"><i class="fa-solid fa-display" aria-hidden="true"></i> 발표용 프레젠테이션</a></li>
+        <li><a class="side-link" href="summary.html" style="display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;color:#cfe3e5;font-size:.875rem;font-weight:600"><i class="fa-solid fa-file-powerpoint" aria-hidden="true"></i> 요약 PPT (.pptx)</a></li>
+        <li><a class="side-link" href="index.html" style="display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;color:#cfe3e5;font-size:.875rem;font-weight:600"><i class="fa-solid fa-house" aria-hidden="true"></i> 프로젝트 허브</a></li>
+      </ul>
+    </nav>
+
+    <section class="sidebar-elder" aria-label="모니터링 대상 요약">
+      <strong id="sidebar-elder-name">김순자 (가명)</strong>
+      <span id="sidebar-elder-meta">78세 · 자택 거주 · 독거</span>
+      <div class="rowline"><span>담당 전문가</span><span id="sidebar-expert">박서연 PT</span></div>
+      <div class="rowline"><span>연결 로봇</span><span id="sidebar-robot">SC-01</span></div>
+    </section>
+  </aside>
+
+  <!-- ===================== 본문 ===================== -->
+  <div class="app-main">
+    <header class="app-topbar">
+      <div>
+        <h1 id="page-title">메인 대시보드</h1>
+        <p class="topbar-sub" id="page-subtitle">오늘의 정서 상태와 활동 달성도를 한눈에 확인합니다.</p>
+      </div>
+      <span class="app-topbar__spacer"></span>
+      <div class="topbar-actions">
+        <span class="live-status" id="live-status" data-state="online">
+          <span class="dot" aria-hidden="true"></span>
+          <span id="live-status-text">펫로봇 실시간 연결됨</span>
+        </span>
+        <span class="badge badge--muted" id="data-source-badge" title="데이터 출처">데이터 확인 중…</span>
+        <button type="button" class="btn btn--quiet btn--sm" id="refresh-btn"><i class="fa-solid fa-rotate" aria-hidden="true"></i> 새로고침</button>
+        <button type="button" class="btn btn--primary btn--sm" id="print-report-btn"><i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> 리포트 인쇄</button>
+      </div>
+    </header>
+
+    <main class="app-content" id="app-content">
+      <p class="sr-only" role="status" id="app-announcer"></p>
+
+      <!-- ============ 탭 1: 메인 대시보드 ============ -->
+      <section class="tab-panel" id="panel-dashboard" role="tabpanel" aria-labelledby="tabbtn-dashboard">
+
+        <div class="metric-grid">
+          <article class="metric metric--primary">
+            <p class="metric__label"><i class="fa-solid fa-heart" aria-hidden="true"></i> 오늘 정서 안정 지수</p>
+            <p class="metric__value">72<small>/100</small></p>
+            <p class="metric__delta metric__delta--up"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i> 어제 대비 +6</p>
+            <div class="meter"><span style="width:72%"></span></div>
+          </article>
+          <article class="metric metric--risk">
+            <p class="metric__label"><i class="fa-solid fa-cloud-rain" aria-hidden="true"></i> 우울 위험 지수</p>
+            <p class="metric__value">38<small>/100</small></p>
+            <p class="metric__delta metric__delta--down"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i> 어제 대비 -4 (개선)</p>
+            <div class="meter meter--risk"><span style="width:38%"></span></div>
+          </article>
+          <article class="metric metric--accent">
+            <p class="metric__label"><i class="fa-solid fa-person-walking" aria-hidden="true"></i> 오늘 신체활동 달성도</p>
+            <p class="metric__value">64<small>%</small></p>
+            <p class="metric__delta metric__delta--flat">스트레칭 3세트 중 2세트 완료</p>
+            <div class="meter meter--accent"><span style="width:64%"></span></div>
+          </article>
+          <article class="metric metric--mint">
+            <p class="metric__label"><i class="fa-solid fa-comments" aria-hidden="true"></i> 오늘 대화 시간</p>
+            <p class="metric__value">24<small>분</small></p>
+            <p class="metric__delta metric__delta--up">평소 대비 12% 증가</p>
+            <div class="meter"><span style="width:80%"></span></div>
+          </article>
+        </div>
+
+        <div class="app-grid app-grid--main">
+          <section class="card" aria-labelledby="emotion-chart-title">
+            <header class="card__title">
+              <h3 id="emotion-chart-title">오늘 정서 상태 — 우울 · 안정 · 기쁨</h3>
+            </header>
+            <p class="card__hint">대화 텍스트·표정·발화 톤을 결합해 추정한 정서 지수(시연용 예시 데이터)</p>
+            <div class="chart-box chart-box--tall"><canvas id="chart-emotion-today" aria-label="오늘 정서 상태 막대 그래프" role="img"></canvas></div>
+          </section>
+
+          <div class="stack-md">
+            <section class="card" aria-labelledby="robot-status-title">
+              <header class="card__title">
+                <h3 id="robot-status-title">펫로봇 연결 상태</h3>
+              </header>
+              <div class="robot-status">
+                <span class="robot-avatar" aria-hidden="true"><i class="fa-solid fa-robot"></i></span>
+                <dl>
+                  <dt>기기</dt><dd>SC-01 (휴머노이드 펫)</dd>
+                  <dt>배터리</dt><dd><span id="robot-battery">86%</span> · 충전 중</dd>
+                  <dt>마지막 동기화</dt><dd id="robot-sync">방금 전</dd>
+                  <dt>센서</dt><dd>카메라·마이크·관성센서 정상</dd>
+                </dl>
+              </div>
+            </section>
+
+            <section class="card" aria-labelledby="activity-donut-title">
+              <header class="card__title">
+                <h3 id="activity-donut-title">활동 달성 구성</h3>
+              </header>
+              <div class="chart-box chart-box--short"><canvas id="chart-activity-donut" aria-label="활동 달성 구성 도넛 차트" role="img"></canvas></div>
+            </section>
+          </div>
+        </div>
+
+        <section class="card" aria-labelledby="chat-summary-title">
+          <header class="card__title">
+            <h3 id="chat-summary-title">최근 대화 요약</h3>
+            <span class="app-topbar__spacer"></span>
+            <span class="badge badge--mint">자연어 처리 요약</span>
+          </header>
+          <p class="card__hint">개인정보는 가명처리 후 요약됩니다. 원문 음성은 저장하지 않는 것을 원칙으로 합니다.</p>
+          <ul class="chat-list" id="chat-summary-list"></ul>
+        </section>
+      </section>
+
+      <!-- ============ 탭 2: 정신건강 & 인지 리포트 ============ -->
+      <section class="tab-panel" id="panel-reports" role="tabpanel" aria-labelledby="tabbtn-reports" hidden>
+        <div class="panel-head">
+          <div>
+            <h2>정신건강 &amp; 인지 훈련 리포트</h2>
+            <p>주간·월간 감정 분석 추이와 인지 훈련 점수 변화를 확인합니다.</p>
+          </div>
+          <span class="panel-head__spacer"></span>
+          <div class="topbar-actions no-print">
+            <button type="button" class="btn btn--quiet btn--sm" data-range="weekly" aria-pressed="true">주간</button>
+            <button type="button" class="btn btn--quiet btn--sm" data-range="monthly" aria-pressed="false">월간</button>
+          </div>
+        </div>
+
+        <div class="metric-grid">
+          <article class="metric metric--primary">
+            <p class="metric__label">주간 평균 정서 지수</p>
+            <p class="metric__value">68<small>/100</small></p>
+            <p class="metric__delta metric__delta--up">지난주 61 → +7</p>
+          </article>
+          <article class="metric metric--risk">
+            <p class="metric__label">우울 고위험 일수</p>
+            <p class="metric__value">2<small>일</small></p>
+            <p class="metric__delta metric__delta--down">지난주 4일 → -2일</p>
+          </article>
+          <article class="metric metric--mint">
+            <p class="metric__label">인지 훈련 평균 점수</p>
+            <p class="metric__value">78<small>점</small></p>
+            <p class="metric__delta metric__delta--down">전월 대비 -3 (난이도 상향 반영)</p>
+          </article>
+          <article class="metric metric--accent">
+            <p class="metric__label">기억력(단기) 정확도</p>
+            <p class="metric__value">74<small>%</small></p>
+            <p class="metric__delta metric__delta--flat">4주 이동평균 유지</p>
+          </article>
+        </div>
+
+        <section class="card" aria-labelledby="emotion-trend-title">
+          <header class="card__title">
+            <h3 id="emotion-trend-title">감정 분석 추이 <span class="card__hint" id="emotion-range-label">(최근 7일)</span></h3>
+          </header>
+          <div class="chart-box chart-box--tall"><canvas id="chart-emotion-trend" aria-label="감정 분석 추이 선형 차트" role="img"></canvas></div>
+        </section>
+
+        <div class="app-grid app-grid--2">
+          <section class="card" aria-labelledby="cognitive-title">
+            <header class="card__title">
+              <h3 id="cognitive-title">인지 훈련 점수 · 기억력 변화</h3>
+            </header>
+            <p class="card__hint">게임별 점수와 기억력 정확도를 함께 표시합니다.</p>
+            <div class="chart-box"><canvas id="chart-cognitive" aria-label="인지 훈련 점수 및 기억력 변화 차트" role="img"></canvas></div>
+          </section>
+
+          <section class="card" aria-labelledby="cognitive-detail-title">
+            <header class="card__title">
+              <h3 id="cognitive-detail-title">훈련 항목별 최근 결과</h3>
+            </header>
+            <div class="table-wrap">
+              <table class="data">
+                <caption>최근 2주간 항목별 점수와 변화 요약입니다.</caption>
+                <thead>
+                  <tr><th scope="col">훈련 항목</th><th scope="col">최근 점수</th><th scope="col">변화</th><th scope="col">난이도</th></tr>
+                </thead>
+                <tbody id="cognitive-table-body"></tbody>
+              </table>
+            </div>
+            <p class="card__hint" style="margin-top:10px">
+              <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+              난이도가 조정되면 점수 자체는 일시적으로 낮아질 수 있습니다. 추이를 함께 보세요.
+            </p>
+          </section>
+        </div>
+
+        <section class="card" aria-labelledby="insight-title">
+          <header class="card__title">
+            <h3 id="insight-title">분석 인사이트 &amp; 권장 개입</h3>
+            <span class="badge badge--warn">익명화 데이터 기반</span>
+          </header>
+          <ul class="icon-list" id="insight-list"></ul>
+        </section>
+      </section>
+
+      <!-- ============ 탭 3: 신체활동 코칭 ============ -->
+      <section class="tab-panel" id="panel-activity" role="tabpanel" aria-labelledby="tabbtn-activity" hidden>
+        <div class="panel-head">
+          <div>
+            <h2>신체활동 코칭 기록</h2>
+            <p>동작인식 센서가 수집한 자세 데이터와 권장 운동 루틴을 확인합니다.</p>
+          </div>
+        </div>
+
+        <div class="metric-grid">
+          <article class="metric metric--accent">
+            <p class="metric__label">오늘 스트레칭</p>
+            <p class="metric__value">2<small>/3 세트</small></p>
+            <div class="meter meter--accent"><span style="width:66%"></span></div>
+          </article>
+          <article class="metric metric--primary">
+            <p class="metric__label">오늘 운동 시간</p>
+            <p class="metric__value">23<small>분</small></p>
+            <p class="metric__delta metric__delta--flat">권장 30분</p>
+            <div class="meter"><span style="width:77%"></span></div>
+          </article>
+          <article class="metric metric--mint">
+            <p class="metric__label">평균 자세 정확도</p>
+            <p class="metric__value">84<small>%</small></p>
+            <p class="metric__delta metric__delta--up">지난주 79% → +5</p>
+          </article>
+          <article class="metric metric--risk">
+            <p class="metric__label">위험 자세 감지</p>
+            <p class="metric__value">3<small>회</small></p>
+            <p class="metric__delta metric__delta--down">무릎 과신전 2 · 허리 굴곡 1</p>
+          </article>
+        </div>
+
+        <div class="app-grid app-grid--2">
+          <section class="card" aria-labelledby="posture-title">
+            <header class="card__title">
+              <h3 id="posture-title">자세 분석 (동작인식 센서)</h3>
+            </header>
+            <p class="card__hint">관절 부위별 정확도를 100점 기준으로 환산했습니다.</p>
+            <div class="chart-box"><canvas id="chart-posture-radar" aria-label="관절 부위별 자세 정확도 레이더 차트" role="img"></canvas></div>
+          </section>
+
+          <section class="card" aria-labelledby="posture-feedback-title">
+            <header class="card__title">
+              <h3 id="posture-feedback-title">자세 교정 피드백 기록</h3>
+            </header>
+            <p class="card__hint">로봇이 실시간으로 안내한 코칭 내용입니다.</p>
+            <ul class="feedback-list" id="posture-feedback-list"></ul>
+          </section>
+        </div>
+
+        <div class="app-grid app-grid--2">
+          <section class="card" aria-labelledby="routine-title">
+            <header class="card__title">
+              <h3 id="routine-title">권장 운동 루틴 추천</h3>
+              <span class="badge badge--accent">개인화 추천</span>
+            </header>
+            <p class="card__hint">최근 활동량·자세 정확도·컨디션을 반영해 생성한 루틴입니다.</p>
+            <ul class="routine-list" id="routine-list"></ul>
+          </section>
+
+          <section class="card" aria-labelledby="weekly-activity-title">
+            <header class="card__title">
+              <h3 id="weekly-activity-title">주간 활동량 추이</h3>
+            </header>
+            <div class="chart-box"><canvas id="chart-weekly-activity" aria-label="주간 활동량 막대 그래프" role="img"></canvas></div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ============ 탭 4: 실시간 모니터링 & 긴급 알림 ============ -->
+      <section class="tab-panel" id="panel-monitoring" role="tabpanel" aria-labelledby="tabbtn-monitoring" hidden>
+        <div class="panel-head">
+          <div>
+            <h2>실시간 모니터링 &amp; 긴급 알림</h2>
+            <p>펫로봇 원격 상태를 점검하고, 이상 감지 시 단계별로 대응합니다.</p>
+          </div>
+          <span class="panel-head__spacer"></span>
+          <div class="topbar-actions no-print">
+            <button type="button" class="btn btn--quiet btn--sm" id="remote-check-btn"><i class="fa-solid fa-satellite-dish" aria-hidden="true"></i> 원격 상태 점검</button>
+            <button type="button" class="btn btn--accent btn--sm" id="simulate-alert-btn"><i class="fa-solid fa-bolt" aria-hidden="true"></i> 이상 상황 시뮬레이션</button>
+          </div>
+        </div>
+
+        <div class="app-grid app-grid--main">
+          <section aria-labelledby="alert-list-title">
+            <header class="panel-head">
+              <div>
+                <h2 id="alert-list-title" style="font-size:1.05rem">긴급 알림 목록</h2>
+                <p id="alert-list-summary">미처리 알림을 확인하고 처리 상태를 기록하세요.</p>
+              </div>
+              <span class="panel-head__spacer"></span>
+              <div class="topbar-actions no-print">
+                <label class="sr-only" for="alert-filter">알림 필터</label>
+                <select id="alert-filter" class="chip" style="padding:8px 12px">
+                  <option value="all">전체 상태</option>
+                  <option value="open">미처리</option>
+                  <option value="acknowledged">확인됨</option>
+                  <option value="resolved">처리 완료</option>
+                </select>
+              </div>
+            </header>
+            <ul class="alert-list" id="alert-list"></ul>
+          </section>
+
+          <div class="stack-md">
+            <section class="card" aria-labelledby="device-check-title">
+              <header class="card__title">
+                <h3 id="device-check-title">펫로봇 원격 상태</h3>
+              </header>
+              <div class="table-wrap">
+                <table class="data">
+                  <caption>로봇 구성 요소별 원격 점검 결과입니다.</caption>
+                  <tbody id="device-check-body"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="card" aria-labelledby="event-timeline-title">
+              <header class="card__title">
+                <h3 id="event-timeline-title">실시간 이벤트</h3>
+                <span class="badge badge--mint">스트리밍</span>
+              </header>
+              <ul class="timeline" id="event-timeline"></ul>
+            </section>
+          </div>
+        </div>
+
+        <section class="card" aria-labelledby="care-note-title">
+          <header class="card__title">
+            <h3 id="care-note-title">돌봄 노트 (보호자 · 전문가 공유)</h3>
+            <span class="badge badge--muted">테이블 API 저장</span>
+          </header>
+          <p class="card__hint">작성한 노트는 데이터베이스에 저장되며, 새로고침 후에도 유지됩니다.</p>
+
+          <form class="form-row form-row--2" id="care-note-form" style="margin:16px 0 22px">
+            <div class="field">
+              <label for="note-author">작성자</label>
+              <input type="text" id="note-author" name="author" placeholder="예: 이지훈 (보호자)" required>
+            </div>
+            <div class="field">
+              <label for="note-category">분류</label>
+              <select id="note-category" name="category">
+                <option value="일반">일반</option>
+                <option value="정서">정서</option>
+                <option value="인지">인지</option>
+                <option value="활동">활동</option>
+              </select>
+            </div>
+            <div class="field" style="grid-column:1 / -1">
+              <label for="note-content">내용</label>
+              <textarea id="note-content" name="content" placeholder="어르신의 상태 변화, 요청 사항 등을 기록하세요." required></textarea>
+            </div>
+            <div class="field" style="grid-column:1 / -1; flex-direction:row; align-items:center; gap:10px">
+              <label for="note-pinned" style="display:flex;align-items:center;gap:8px;font-weight:600">
+                <input type="checkbox" id="note-pinned" name="pinned" style="width:auto"> 상단 고정
+              </label>
+              <span style="flex:1 1 auto"></span>
+              <button type="submit" class="btn btn--primary btn--sm" id="note-submit-btn"><i class="fa-solid fa-plus" aria-hidden="true"></i> 노트 등록</button>
+            </div>
+          </form>
+
+          <ul class="note-list" id="care-note-list"></ul>
+        </section>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="app-toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="js/app-data.js"></script>
+<script src="js/app-charts.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
