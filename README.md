@@ -168,6 +168,10 @@ js/
 
 ## 8. 유의사항
 
+# 실행링크 https://pixel-app.kdt2025.com/
+<img width="1220" height="734" alt="image" src="https://github.com/user-attachments/assets/6df2db5d-fe95-478f-ac33-04268573f907" />
+
+
 - 본 사이트의 모든 수치는 **시연용 예시 데이터**이며, 실제 의료적 진단을 대체하지 않습니다.
 - 본 플랫폼은 전문가 판단을 보조하는 **징후 탐지(signal detection)** 포지셔닝을 전제로 합니다.
 - 개인정보는 **최소 수집·가명/익명 처리·동의 기반 활용** 원칙을 전제로 설계되었습니다.
